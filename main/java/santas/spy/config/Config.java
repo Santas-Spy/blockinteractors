@@ -28,6 +28,7 @@ public class Config {
     private ErrorLogger errors;
     private boolean breakerRequiresFuel;
     private boolean placerRequiresFuel;
+    private boolean fillEmptyBreaker;
     File configFile;
 
     public static Config getConfig()
@@ -53,6 +54,7 @@ public class Config {
     public Map<Material,Mineable> mineables()   { return mineables; }
     public boolean placerRequiresFuel()         { return placerRequiresFuel; }
     public boolean breakerRequiresFuel()        { return breakerRequiresFuel; }
+    public boolean fillEmptyBreaker()           { return fillEmptyBreaker; }
 
     public void reload()
     {
@@ -65,6 +67,7 @@ public class Config {
         breakerItems = loadItems("block-breaker-items");
         placerItems = loadItems("block-placer-items");
         minerItems = loadItems("block-miner-items");
+        fillEmptyBreaker = info.getBoolean("fill-empty-breaker");
         loadFuels();
         loadMineables();
     }
@@ -145,6 +148,9 @@ public class Config {
             //get result
             String rawResult = info.getString("mineable-blocks." + s + ".gives");
             String[] data = rawResult.split(":");
+            if (data.length > 2) {
+                data[0] = "CUSTOM:" + data[1];
+            }
             ItemStack result = grabber.grab(data[0]);
             if (data.length < 2) {
                 result.setAmount(1);

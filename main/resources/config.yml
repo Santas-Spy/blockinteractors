@@ -9,6 +9,9 @@ debug-level: 0
 #Which item should signify a block breaker
 block-breaker-items: [wooden_pickaxe, CUSTOM:Breaker-Token]
 
+#Breakers need at least one item in them to work properly. Upon making a new breaker should a temp item be placed inside if the dispenser is empty?
+fill-empty-breaker: true
+
 #which item should signify a block placer
 block-placer-items: [piston, sticky_piston, CUSTOM:Placer-Token]
 

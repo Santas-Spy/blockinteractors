@@ -39,14 +39,24 @@ public class Miner implements Interactor
             Mineable toMine = config.mineables().get(block.getType());
             Fuel fuelType = null;
             if (toMine != null) {
-                ItemStack[] inv = miner.getInventory().getContents();
+                ItemStack[] inv = miner.getInventory().getStorageContents();
                 boolean found = false;
                 int i = 0;
                 while (!found && i < inv.length) {
                     for (Fuel fuel : toMine.fuels()) {
+                        if (config.debug() > 1) {
+                            String message = "Checking fuel " + fuel.name() + " against item in slot " + i + " which has type: ";
+                            if (inv[i] == null) {
+                                message += "null";
+                            } else {
+                                message += inv[i].getType();
+                            }
+                            BlockInteractor.debugMessage(message, 2);
+                        } 
                         if (inv[i] != null && inv[i].isSimilar(fuel.fuel())) {
                             found = true;
                             fuelType = fuel;
+                            BlockInteractor.debugMessage("Found!", 2);
                         }
                     }
                     if (!found) {

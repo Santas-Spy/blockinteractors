@@ -23,7 +23,7 @@ public class Breaker implements Interactor {
         this.breaker = breaker;
         config = Config.getConfig();
         BlockInteractor.debugMessage("Putting filler item in new breaker", 2);
-        if (!breaker.getInventory().contains(fillerItem)) {
+        if (breaker.getInventory().isEmpty() && config.fillEmptyBreaker()) {
             breaker.getInventory().addItem(fillerItem);
         }
     }
