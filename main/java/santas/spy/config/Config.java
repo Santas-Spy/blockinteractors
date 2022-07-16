@@ -101,6 +101,10 @@ public class Config {
             ItemStack type = grabber.grab(s);
             if (type != null) {
                 int timer = info.getInt("fuel-sources." + s + ".timer");
+                if (timer < 1) {
+                    BlockInteractor.debugMessage("Error in config. Fuel " + s + " has a timer less than 1. This would cause a crash. Setting it to 1", 0);
+                    errors.add("Error in config. Fuel " + s + " has a timer less than 1. This would cause a crash. It has been set to 1 for safety", "fuel-sources." + s + ".timer");
+                }
                 BlockInteractor.debugMessage("Got type " + type.getType() + " for fuel", 2);
                 fuels.put(s, new Fuel(type, timer, s));
                 BlockInteractor.debugMessage("Added " + s + " to fuels", 1);

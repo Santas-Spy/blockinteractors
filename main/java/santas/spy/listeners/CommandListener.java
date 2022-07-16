@@ -63,9 +63,9 @@ public class CommandListener implements CommandExecutor
     }
 
     private void help(CommandSender sender) {
-        sender.sendMessage("/blockinteractors reload: reloads config");
-        sender.sendMessage("/blockinteractors list: lists the location of all interactors");
-        sender.sendMessage("/blockinteractors configdebug: lists the errors found in the config file");
+        if (sender.hasPermission("blockinteractor.reload")) { sender.sendMessage("/blockinteractors reload: reloads config"); }
+        if (sender.hasPermission("blockinteractor.list")) { sender.sendMessage("/blockinteractors list: lists the location of all interactors"); }
+        if (sender.hasPermission("blockinteractor.configdebug")) { sender.sendMessage("/blockinteractors configdebug: lists the errors found in the config file"); }
         sender.sendMessage("/blockinteractors help: show this list");
     }
 
