@@ -1,0 +1,40 @@
+main: santas.spy.BlockInteractor
+name: BlockInteractors
+version: 1.0
+api-version: 1.18
+commands:
+  blockinteractor:
+    description: block interactors main command
+softdepend: [SantasCrafting]
+permissions:
+  blockinteractor.reload:
+    description: Allows the user to reload the plugin and config
+    default: op
+  blockinteractor.configdebug:
+    description: Allows the user to list the errors found in the config file
+    default: op
+  blockinteractor.create.miner:
+    description: Allows the user to create miners
+    default: true
+  blockinteractor.create.placer:
+    description: Allows the user to create placers
+    default: true
+  blockinteractor.create.breaker:
+    description: Allows the user to create breakers
+    default: true
+  blockinteractor.create.*:
+    description: Allows the user to create all interactors
+    default: true
+    children:
+      blockinteractor.create.breaker: true
+      blockinteractor.create.placer: true
+      blockinteractor.create.miner: true
+  blockinteractor.*:
+    description: Gives all blockinteractor perms
+    default: op
+    children:
+      blockinteractor.reload: true
+      blockinteractor.configdebug: true
+      blockinteractor.create.breaker: true
+      blockinteractor.create.placer: true
+      blockinteractor.create.miner: true

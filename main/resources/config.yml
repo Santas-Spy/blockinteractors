@@ -1,0 +1,43 @@
+#The level of console spam the plugin should give
+# 0 = only error messages
+# 1 = useful information for debugging config
+# 2 = developer mode (will spam console! mostly useful for debugging code, and for making error logs)
+debug-level: 0
+
+#Which item should signify a block breaker
+block-breaker-items: [wooden_pickaxe, CUSTOM:Breaker-Token]
+
+#which item should signify a block placer
+block-placer-items: [piston, sticky_piston, CUSTOM:Placer-Token]
+
+#which item should signify a block miner
+block-miner-items: [iron_pickaxe, CUSTOM:Miner-Token]
+
+#fuel sources for miners
+fuel-sources:
+  coal:
+    timer: 20
+  charcoal:
+    timer: 100
+  CUSTOM:superfuel:
+    timer: 1
+
+mineable-blocks:
+  diamond_ore:
+    fuels: [coal,CUSTOM:superfuel]
+    gives: diamond:1
+  iron_ore:
+    fuels: [coal,charcoal,CUSTOM:superfuel]
+    gives: raw_iron:3
+  coal_ore:
+    fuels: [charcoal,coal,CUSTOM:superfuel]
+    gives: coal:2
+  gold_ore:
+    fuels: [charcoal,coal,CUSTOM:superfuel]
+    gives: raw_gold:2
+  ancient_debris:
+    fuels: [CUSTOM:superfuel]
+    gives: netherite_scrap:1
+
+
+  
