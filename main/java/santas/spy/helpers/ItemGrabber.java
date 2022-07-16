@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import santas.spy.BlockInteractor;
+import santas.spy.config.Config;
 
 public class ItemGrabber 
 {
@@ -17,6 +18,7 @@ public class ItemGrabber
         if (data[0].equals("CUSTOM")) {
             if (BlockInteractor.CRAFTING == null) {
                 Bukkit.getLogger().warning("Using custom item " + data[1] + " but SantasCrafting is not installed");
+                Config.getConfig().addError("Using custom item " + data[1] + " but SantasCrafting is not installed", type);
             } else {
                 if (ItemValidater.isNameOfCustomItem(data[1])) {
                     item = ItemValidater.giveCustomItem(data[1]);

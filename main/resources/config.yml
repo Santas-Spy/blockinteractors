@@ -1,3 +1,5 @@
+#Most common errors can be caught and listed in game using /blockinteractor configdebug
+
 #The level of console spam the plugin should give
 # 0 = only error messages
 # 1 = useful information for debugging config
@@ -14,6 +16,9 @@ block-placer-items: [piston, sticky_piston, CUSTOM:Placer-Token]
 block-miner-items: [iron_pickaxe, CUSTOM:Miner-Token]
 
 #fuel sources for miners
+#syntax is
+# fuelname: (this should be its material name, not a placeholder name)
+#   timer: [time in ticks for mining delay]
 fuel-sources:
   coal:
     timer: 20
@@ -22,6 +27,11 @@ fuel-sources:
   CUSTOM:superfuel:
     timer: 1
 
+#which blocks miners can mine
+#syntax is
+# blockname: (this should be its material name, not a placeholder)
+#   fuels: [a list of fuels that can be used on this block]
+#   gives: [the result from mining]:[amount]
 mineable-blocks:
   diamond_ore:
     fuels: [coal,CUSTOM:superfuel]
@@ -38,6 +48,3 @@ mineable-blocks:
   ancient_debris:
     fuels: [CUSTOM:superfuel]
     gives: netherite_scrap:1
-
-
-  

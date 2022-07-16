@@ -15,8 +15,12 @@ public class ErrorLogger
     public String list()
     {
         StringBuilder errorMessage = new StringBuilder();
-        for (Error error : errors) {
-            errorMessage.append(String.format("Error at section \"%s\". %s\n", error.line, error.desc));
+        if (errors.isEmpty()) {
+            errorMessage.append("There were no errors to report");
+        } else {
+            for (Error error : errors) {
+                errorMessage.append(String.format("Error at section \"%s\". %s\n", error.line, error.desc));
+            }
         }
 
         return errorMessage.toString();

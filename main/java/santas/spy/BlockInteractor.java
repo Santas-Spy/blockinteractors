@@ -198,6 +198,12 @@ public class BlockInteractor extends JavaPlugin {
 
     private void generateFiles()
     {
-        saveResource("config.yml", false);
+        if (getResource("config.yml") == null) {
+            saveResource("config.yml", false);
+        }
+
+        if (getResource("interactors.txt") == null) {
+            saveInteractors();
+        }
     }
 }

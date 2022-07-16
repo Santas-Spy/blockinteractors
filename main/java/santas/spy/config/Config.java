@@ -164,4 +164,9 @@ public class Config {
     {
         return errors.list();
     }
+
+    public void addError(String desc, String line)
+    {
+        errors.add(desc, line);
+    }
 }
