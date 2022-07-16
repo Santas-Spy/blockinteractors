@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,6 +40,9 @@ public class BlockInteractor extends JavaPlugin {
     {
         getLogger().info(ChatColor.GREEN + "Starting Plugin");
         PLUGIN = this;
+
+        getLogger().info(ChatColor.GREEN + "Looking for bstats");
+        getbstats();
 
         getLogger().info(ChatColor.GREEN + "Loading Files");
         generateFiles();
@@ -205,5 +209,11 @@ public class BlockInteractor extends JavaPlugin {
         if (getResource("interactors.txt") == null) {
             saveInteractors();
         }
+    }
+
+    private void getbstats()
+    {
+        int pluginID = 15797;
+        Metrics metrics = new Metrics(this, pluginID);
     }
 }
