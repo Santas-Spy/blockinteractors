@@ -1,5 +1,6 @@
 package santas.spy.blockinteractor.newblocks;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Dispenser;
@@ -17,19 +18,22 @@ public class Placer implements Interactor {
     }
 
     @Override
-    public void interact()
+    public void interact(ItemStack dispensedItem)
     {
         Directional direction = (Directional)placer.getBlockData();
         Location location = placer.getLocation().add(direction.getFacing().getDirection());
         if (location.getBlock().getType().equals(Material.AIR)) {
-            Material type = toPlace();
+            Material type = toPlace(dispensedItem);
             if (type != null) {
                 location.getBlock().setType(type);
+                BlockInteractor.debugMessage("Placing " + type, 2);
+            } else {
+                BlockInteractor.debugMessage("Valid item could not be found inside the placer", 2);
             }
         }
     }
 
-    private Material toPlace()
+    private Material toPlace(ItemStack dispensedItem)
     {
         boolean found = false;
         int i = 0;
@@ -49,6 +53,14 @@ public class Placer implements Interactor {
                     BlockInteractor.debugMessage(i + ": " + inv[i].getType(), 2);
                 }
                 i++;
+            }
+        }
+
+        if (!found) {
+            if (dispensedItem.getType().isBlock()) {
+                type = dispensedItem.getType();
+                removeItem(dispensedItem);
+                BlockInteractor.debugMessage("Dispensed Item was a valid item", 2);
             }
         }
 
@@ -73,5 +85,15 @@ public class Placer implements Interactor {
         data += ",";
         data += placer.getZ();
         return data;
+    }
+
+    private void removeItem(ItemStack toRemove)
+    {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(BlockInteractor.PLUGIN, new Runnable() {
+            @Override
+            public void run() {
+                placer.getInventory().removeItem(toRemove);
+            }
+        }, 1);
     }
 }

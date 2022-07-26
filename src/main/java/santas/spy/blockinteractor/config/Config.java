@@ -58,6 +58,10 @@ public class Config {
 
     public void reload()
     {
+        debug = 2;
+        BlockInteractor.debugMessage("Checking for config update", 1);
+        ConfigUpdater updater = new ConfigUpdater();
+        updater.update();
         configFile = new File(BlockInteractor.PLUGIN.getDataFolder(), "config.yml");
         info = YamlConfiguration.loadConfiguration(configFile);
         debug = info.getInt("debug-level");
@@ -149,7 +153,9 @@ public class Config {
             String rawResult = info.getString("mineable-blocks." + s + ".gives");
             String[] data = rawResult.split(":");
             if (data.length > 2) {
-                data[0] = "CUSTOM:" + data[1];
+                String name = "Custom:" + data[1];
+                String count = data[2];
+                data = new String[] {name, count};
             }
             ItemStack result = grabber.grab(data[0]);
             if (result == null) {
@@ -180,8 +186,8 @@ public class Config {
         return errors.list();
     }
 
-    public void addError(String desc, String line)
+    public static void addError(String desc, String line)
     {
-        errors.add(desc, line);
+        instance.errors.add(desc, line);
     }
 }

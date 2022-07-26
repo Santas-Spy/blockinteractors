@@ -22,9 +22,15 @@ public class Breaker implements Interactor {
     {
         this.breaker = breaker;
         config = Config.getConfig();
-        BlockInteractor.debugMessage("Putting filler item in new breaker", 2);
         if (breaker.getInventory().isEmpty() && config.fillEmptyBreaker()) {
+            BlockInteractor.debugMessage("Putting filler item in new breaker", 2);
             breaker.getInventory().addItem(fillerItem);
+        } else {
+            if (config.fillEmptyBreaker()) {
+                BlockInteractor.debugMessage("fillbreaker was true but dispenser was not empty", 2);
+            } else {
+                BlockInteractor.debugMessage("fillbreaker was false", 2);
+            }
         }
     }
 
@@ -32,7 +38,7 @@ public class Breaker implements Interactor {
      * Breaks the block infront of the dispenser
      * */
     @Override
-    public void interact()
+    public void interact(ItemStack item)
     {
         BlockInteractor.debugMessage("Breaker is trying to break", 2);
         Directional direction = (Directional)breaker.getBlockData();

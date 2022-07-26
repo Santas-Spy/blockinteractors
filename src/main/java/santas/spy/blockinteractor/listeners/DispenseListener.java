@@ -18,9 +18,8 @@ public class DispenseListener implements Listener
         Interactor interactor = plugin.findInteractor(event.getBlock().getLocation());
         if (interactor != null) {
             BlockInteractor.debugMessage("Dispensed item: " + event.getItem(), 2);
-            interactor.interact();
             event.setCancelled(true);
+            interactor.interact(event.getItem());
         }
     }
-    
 }

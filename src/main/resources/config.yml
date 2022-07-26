@@ -1,5 +1,8 @@
 #Most common errors can be caught and listed in game using /blockinteractor configdebug
 
+#IMPORTANT! do not change this value
+config-version: 1
+
 #The level of console spam the plugin should give
 # 0 = only error messages
 # 1 = useful information for debugging config

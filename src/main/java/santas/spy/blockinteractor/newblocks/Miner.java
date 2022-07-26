@@ -28,44 +28,15 @@ public class Miner implements Interactor
     }
 
     @Override
-    public void interact()
+    public void interact(ItemStack dispensedItem)
     {
         if (!isMining) {
             BlockInteractor.debugMessage("interact() called on miner", 2);
-            //if facing mineable AND has fuel
-            //take fuel and schedule drop mineable result in fuel timer time
-            Block block = mineableLocation.getBlock();
-            BlockInteractor.debugMessage("Trying to get mineable for block type " + block.getType(), 2);
-            Mineable toMine = config.mineables().get(block.getType());
-            Fuel fuelType = null;
+            BlockInteractor.debugMessage("Trying to get mineable for block type " + mineableLocation.getBlock().getType(), 2);
+            Mineable toMine = config.mineables().get(mineableLocation.getBlock().getType());
             if (toMine != null) {
-                ItemStack[] inv = miner.getInventory().getStorageContents();
-                boolean found = false;
-                int i = 0;
-                while (!found && i < inv.length) {
-                    for (Fuel fuel : toMine.fuels()) {
-                        if (config.debug() > 1) {
-                            String message = "Checking fuel " + fuel.name() + " against item in slot " + i + " which has type: ";
-                            if (inv[i] == null) {
-                                message += "null";
-                            } else {
-                                message += inv[i].getType();
-                            }
-                            BlockInteractor.debugMessage(message, 2);
-                        } 
-                        if (inv[i] != null && inv[i].isSimilar(fuel.fuel())) {
-                            found = true;
-                            fuelType = fuel;
-                            BlockInteractor.debugMessage("Found!", 2);
-                        }
-                    }
-                    if (!found) {
-                        i++;
-                    }
-                }
-
-                if (found) {
-                    inv[i].setAmount(inv[i].getAmount() -1);
+                Fuel fuelType = getFuel(toMine, miner.getInventory().getContents(), dispensedItem);
+                if (fuelType != null) {
                     isMining = true;
                     BlockInteractor.debugMessage("Begining Mining", 2);
                     Bukkit.getScheduler().scheduleSyncDelayedTask(BlockInteractor.PLUGIN, new Runnable() {
@@ -74,21 +45,65 @@ public class Miner implements Interactor
                             miner.getWorld().dropItemNaturally(mineableLocation.clone().add(0,0.5,0), toMine.result());
                             isMining = false;
                             if (miner.getBlock().getBlockPower() > 0) {
-                                interact();
+                                miner.dispense();
                             }
                         }
                     }, fuelType.timer());
                 } else {
                     BlockInteractor.debugMessage("No fuel was found in the miner", 2);
                     BlockInteractor.debugMessage("Valid fuels are: ", 2);
-                    for (Fuel fuel : toMine.fuels()) {
-                        BlockInteractor.debugMessage("\t" + fuel.name(), 2);
+                    for (Fuel validFuel : toMine.fuels()) {
+                        BlockInteractor.debugMessage("\t" + validFuel.name(), 2);
                     }
                 }
             } else {
                 BlockInteractor.debugMessage("No mineable block was found infront of the miner", 2);
             }
         }
+    }
+
+    private Fuel getFuel(Mineable toMine, ItemStack[] inv, ItemStack dispensedItem)
+    {
+        Fuel fuelType = null;
+
+        int i = 0;
+        boolean found = false;
+        while (!found && i < inv.length) {
+            for (Fuel fuel : toMine.fuels()) {
+                //debug info
+                if (config.debug() > 1) {
+                    String message = "Checking fuel " + fuel.name() + " against item in slot " + i + " which has type: ";
+                    if (inv[i] == null) {
+                        message += "null";
+                    } else {
+                        message += inv[i].getType();
+                    }
+                    BlockInteractor.debugMessage(message, 2);
+                }
+
+                //actual check
+                if (inv[i] != null && inv[i].isSimilar(fuel.fuel())) {
+                    found = true;
+                    fuelType = fuel;
+                    inv[i].setAmount(inv[i].getAmount() - 1);
+                    BlockInteractor.debugMessage("Found fuel " + fuel.name() + " at slot " + i, 2);
+                }
+            }
+            if (!found) {
+                i++;
+            }
+        }
+
+        if (!found) {
+            for (Fuel fuel : toMine.fuels()) {
+                if (dispensedItem.isSimilar(fuel.fuel())) {
+                    fuelType = fuel;
+                    BlockInteractor.debugMessage("Dispensed Item was a valid fuel", 2);
+                }
+            }
+        }
+
+        return fuelType;
     }
 
     public boolean getMiningStatus()
