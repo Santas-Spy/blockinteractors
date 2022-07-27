@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import santas.spy.blockinteractor.BlockInteractor;
 import santas.spy.blockinteractor.config.Config;
 import santas.spy.blockinteractor.newblocks.Breaker;
+import santas.spy.blockinteractor.newblocks.Interactor;
 import santas.spy.blockinteractor.newblocks.Miner;
 import santas.spy.blockinteractor.newblocks.Placer;
 
@@ -37,7 +38,7 @@ public class CreationEventListener implements Listener
                 Dispenser interactor = (Dispenser)block.getState();
                 if (itemInList(itemInHand, config.breakerItems())) {
                     if (event.getPlayer().hasPermission("blockinteractor.create.breaker")) {
-                        createBreaker(interactor);
+                        createInteractor(new Breaker(interactor));
                         event.getPlayer().sendMessage("You have made a new Breaker");
                     } else { 
                         event.setCancelled(true);
@@ -46,7 +47,7 @@ public class CreationEventListener implements Listener
                 } else {
                     if (itemInList(itemInHand, config.placerItems())) {
                         if (event.getPlayer().hasPermission("blockinteractor.create.placer")) {
-                            createPlacer(interactor);
+                            createInteractor(new Placer(interactor));
                             event.getPlayer().sendMessage("You have made a new Placer");
                         } else { 
                             event.setCancelled(true);
@@ -55,7 +56,7 @@ public class CreationEventListener implements Listener
                     } else {
                         if (itemInList(itemInHand, config.minerItems())) {
                             if (event.getPlayer().hasPermission("blockinteractor.create.miner")) {
-                                createMiner(interactor);
+                                createInteractor(new Miner(interactor));
                                 event.getPlayer().sendMessage("You have made a new Miner");
                             } else { 
                                 event.setCancelled(true);
@@ -102,19 +103,9 @@ public class CreationEventListener implements Listener
         }
     }
 
-    private void createBreaker(Dispenser breaker)
+    private void createInteractor(Interactor interactor)
     {
-        plugin.addInteractor(new Breaker(breaker));
-    }
-
-    private void createPlacer(Dispenser breaker)
-    {
-        plugin.addInteractor(new Placer(breaker));
-    }
-
-    private void createMiner(Dispenser breaker)
-    {
-        plugin.addInteractor(new Miner(breaker));
+        plugin.addInteractor(interactor);
     }
 
     private boolean itemInList(ItemStack testItem, List<ItemStack> items)

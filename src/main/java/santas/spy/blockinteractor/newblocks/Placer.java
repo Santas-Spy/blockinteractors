@@ -37,7 +37,7 @@ public class Placer implements Interactor {
     {
         boolean found = false;
         int i = 0;
-        ItemStack[] inv = placer.getInventory().getContents();
+        ItemStack[] inv = ((Dispenser)placer.getBlock().getState()).getInventory().getContents();
         Material type = null;
 
         while (!found && i < inv.length) {
@@ -92,7 +92,7 @@ public class Placer implements Interactor {
         Bukkit.getScheduler().scheduleSyncDelayedTask(BlockInteractor.PLUGIN, new Runnable() {
             @Override
             public void run() {
-                placer.getInventory().removeItem(toRemove);
+                ((Dispenser)placer.getBlock().getState()).getInventory().removeItem(toRemove);
             }
         }, 1);
     }

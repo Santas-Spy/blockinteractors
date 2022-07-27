@@ -15,6 +15,7 @@ import santas.spy.blockinteractor.config.Mineable;
 public class Miner implements Interactor
 {
     private Dispenser miner;
+    private Block minerBlock;
     private boolean isMining;
     private Config config;
     private Location mineableLocation;
@@ -22,6 +23,7 @@ public class Miner implements Interactor
     public Miner(Dispenser inBlock)
     {
         miner = inBlock;
+        minerBlock = inBlock.getBlock();
         isMining = false;
         setMineableLocation();
         config = Config.getConfig();
@@ -35,16 +37,16 @@ public class Miner implements Interactor
             BlockInteractor.debugMessage("Trying to get mineable for block type " + mineableLocation.getBlock().getType(), 2);
             Mineable toMine = config.mineables().get(mineableLocation.getBlock().getType());
             if (toMine != null) {
-                Fuel fuelType = getFuel(toMine, miner.getInventory().getContents(), dispensedItem);
+                Fuel fuelType = getFuel(toMine, dispensedItem);
                 if (fuelType != null) {
                     isMining = true;
                     BlockInteractor.debugMessage("Begining Mining", 2);
                     Bukkit.getScheduler().scheduleSyncDelayedTask(BlockInteractor.PLUGIN, new Runnable() {
                         @Override
                         public void run() {
-                            miner.getWorld().dropItemNaturally(mineableLocation.clone().add(0,0.5,0), toMine.result());
+                            minerBlock.getWorld().dropItemNaturally(mineableLocation.clone().add(0,0.5,0), toMine.result());
                             isMining = false;
-                            if (miner.getBlock().getBlockPower() > 0) {
+                            if (minerBlock.getBlockPower() > 0) {
                                 miner.dispense();
                             }
                         }
@@ -62,25 +64,16 @@ public class Miner implements Interactor
         }
     }
 
-    private Fuel getFuel(Mineable toMine, ItemStack[] inv, ItemStack dispensedItem)
+    private Fuel getFuel(Mineable toMine, ItemStack dispensedItem)
     {
         Fuel fuelType = null;
+        ItemStack[] inv = ((Dispenser)minerBlock.getState()).getInventory().getContents();
 
         int i = 0;
         boolean found = false;
         while (!found && i < inv.length) {
+            BlockInteractor.debugMessage("Checking slot " + i + " which was " + inv[i], 2);
             for (Fuel fuel : toMine.fuels()) {
-                //debug info
-                if (config.debug() > 1) {
-                    String message = "Checking fuel " + fuel.name() + " against item in slot " + i + " which has type: ";
-                    if (inv[i] == null) {
-                        message += "null";
-                    } else {
-                        message += inv[i].getType();
-                    }
-                    BlockInteractor.debugMessage(message, 2);
-                }
-
                 //actual check
                 if (inv[i] != null && inv[i].isSimilar(fuel.fuel())) {
                     found = true;
@@ -98,11 +91,13 @@ public class Miner implements Interactor
             for (Fuel fuel : toMine.fuels()) {
                 if (dispensedItem.isSimilar(fuel.fuel())) {
                     fuelType = fuel;
-                    BlockInteractor.debugMessage("Dispensed Item was a valid fuel", 2);
+                    removeItem(dispensedItem);
+                    BlockInteractor.debugMessage("Dispensed Item (" + dispensedItem + ") was a valid fuel", 2);
                 }
             }
         }
-
+        //miner.getInventory().setContents(inv);
+        //BlockInteractor.debugMessage("miner.update() returned " + miner.update(), 2);
         return fuelType;
     }
 
@@ -113,29 +108,39 @@ public class Miner implements Interactor
 
     public Block getBlock()
     {
-        return miner.getBlock();
+        return minerBlock;
     }
 
     public String saveData() {
         String data = "miner,";
-        data += miner.getWorld().getName();
+        data += minerBlock.getWorld().getName();
         data += ",";
-        data += miner.getX();
+        data += minerBlock.getX();
         data += ",";
-        data += miner.getY();
+        data += minerBlock.getY();
         data += ",";
-        data += miner.getZ();
+        data += minerBlock.getZ();
         return data;
     }
 
     private void setMineableLocation()
     {
-        mineableLocation = miner.getLocation().add(((Directional)miner.getBlockData()).getFacing().getDirection());
+        mineableLocation = minerBlock.getLocation().add(((Directional)miner.getBlockData()).getFacing().getDirection());
     }
 
     @Override
     public Location getLocation()
     {
-        return miner.getLocation();
+        return minerBlock.getLocation();
+    }
+
+    private void removeItem(ItemStack toRemove)
+    {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(BlockInteractor.PLUGIN, new Runnable() {
+            @Override
+            public void run() {
+                ((Dispenser)minerBlock.getState()).getInventory().removeItem(toRemove);
+            }
+        }, 1);
     }
 }
