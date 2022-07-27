@@ -2,9 +2,11 @@ package santas.spy.blockinteractor;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,21 +45,21 @@ public class BlockInteractor extends JavaPlugin {
         getLogger().info(ChatColor.GREEN + "Starting Plugin");
         PLUGIN = this;
 
+        getLogger().info(ChatColor.GREEN + "Checking for SantasCrafting");
+        findSantasCrafting();
+
+        getLogger().info(ChatColor.GREEN + "Loading Config");
+        config = Config.getConfig();
+        config.reload();
+
         getLogger().info(ChatColor.GREEN + "Looking for bstats");
         getbstats();
 
         getLogger().info(ChatColor.GREEN + "Loading Files");
         generateFiles();
-        
-        getLogger().info(ChatColor.GREEN + "Checking for SantasCrafting");
-        findSantasCrafting();
 
         getLogger().info(ChatColor.GREEN + "Registering Listeners");
         registerListeners();
-
-        getLogger().info(ChatColor.GREEN + "Loading Config");
-        config = Config.getConfig();
-        config.reload();
 
         getLogger().info(ChatColor.GREEN + "Loading Interactors");
         loadInteractors();
@@ -143,9 +145,11 @@ public class BlockInteractor extends JavaPlugin {
 
     private void saveInteractors()
     {
+        debugMessage("Saving interactors", 2);
         File file = new File(PLUGIN.getDataFolder(), "interactors.txt");
         try (PrintWriter pw = new PrintWriter(file)) {
             for (Interactor interactor : interactors) {
+                BlockInteractor.debugMessage("saving " + interactor.saveData(), 2);
                 pw.write(interactor.saveData() + "\n");
             }
         } catch (FileNotFoundException e) {
@@ -155,22 +159,30 @@ public class BlockInteractor extends JavaPlugin {
 
     private void loadInteractors()
     {
-        File file = new File(PLUGIN.getDataFolder(), "interactors.txt");
-        if (file != null) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        debugMessage("starting loadInteractors", 2);
+        try {
+            File file = new File(PLUGIN.getDataFolder(), "interactors.txt");
+            debugMessage("Found interactors.txt of size " + file.getTotalSpace(), 2);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
                 String line = reader.readLine();
+                debugMessage("Got line " + line, 2);
                 while (line != null) {
                     parseLine(line);
                     line = reader.readLine();
                 }
+            } catch (FileNotFoundException e) {
+                debugMessage("interactors.txt was missing. No interactors will be loaded", 1);
             } catch (IOException e) {
                 debugMessage("Could not load interactors due to error: " + e.getMessage(), 0);
             }
+        } catch (NullPointerException e) {
+            debugMessage("Could not find interactors.txt", 0);
         }
     }
 
     private void parseLine(String line)
     {
+        debugMessage("parsing line " + line, 2);
         String[] data = line.split(",");
         World world = Bukkit.getWorld(data[1]);
         if (world != null) {
@@ -206,10 +218,6 @@ public class BlockInteractor extends JavaPlugin {
     {
         if (getResource("config.yml") == null) {
             saveResource("config.yml", false);
-        }
-
-        if (getResource("interactors.txt") == null) {
-            saveInteractors();
         }
     }
 

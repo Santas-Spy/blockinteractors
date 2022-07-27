@@ -2,7 +2,6 @@ package santas.spy.blockinteractor.listeners;
 
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -105,7 +104,6 @@ public class CreationEventListener implements Listener
 
     private void createBreaker(Dispenser breaker)
     {
-        if (breaker == null) { Bukkit.getLogger().warning("null"); } else { Bukkit.getLogger().info(breaker.getBlock().getType().toString()); }
         plugin.addInteractor(new Breaker(breaker));
     }
 
