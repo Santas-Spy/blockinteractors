@@ -22,7 +22,7 @@ public class Config {
     private List<ItemStack> placerItems;
     private List<ItemStack> minerItems;
     private Map<String, Fuel> fuels;
-    private Map<Material, Mineable> mineables;
+    private Map<Material, MineableBlueprint> mineables;
     private YamlConfiguration info;
     private ItemGrabber grabber;
     private ErrorLogger errors;
@@ -51,7 +51,7 @@ public class Config {
     public List<ItemStack> placerItems()        { return placerItems; }
     public List<ItemStack> minerItems()         { return minerItems; }
     public Map<String, Fuel> fuels()            { return fuels; }
-    public Map<Material,Mineable> mineables()   { return mineables; }
+    public Map<Material,MineableBlueprint> mineables()   { return mineables; }
     public boolean placerRequiresFuel()         { return placerRequiresFuel; }
     public boolean breakerRequiresFuel()        { return breakerRequiresFuel; }
     public boolean fillEmptyBreaker()           { return fillEmptyBreaker; }
@@ -175,8 +175,15 @@ public class Config {
                 }
             }
 
+            //get max uses
+            int maxUses = info.getInt("mineable-blocks." + s + ".maxuses");
+            if (maxUses == 0) {
+                maxUses = -1;
+            }
+            BlockInteractor.debugMessage("Setting " + s + " maxuses to " + maxUses, 2);
+
             //combine into mineable
-            mineables.put(type, new Mineable(type, fuelTypes, result));
+            mineables.put(type, new MineableBlueprint(type, fuelTypes, result, maxUses));
             BlockInteractor.debugMessage("Added " + s + " to mineables", 2);
         }
     }
@@ -189,5 +196,15 @@ public class Config {
     public static void addError(String desc, String line)
     {
         instance.errors.add(desc, line);
+    }
+
+    public Mineable getMineable(Material type)
+    {
+        MineableBlueprint blueprint = mineables.get(type);
+        Mineable mineable = null;
+        if (blueprint != null) {
+            mineable = new Mineable(type, blueprint.fuels(), blueprint.result(), blueprint.uses());
+        }
+        return mineable;
     }
 }

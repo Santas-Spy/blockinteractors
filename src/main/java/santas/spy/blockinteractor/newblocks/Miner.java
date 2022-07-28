@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Dispenser;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 import santas.spy.blockinteractor.BlockInteractor;
 import santas.spy.blockinteractor.config.Config;
@@ -19,6 +20,7 @@ public class Miner implements Interactor
     private boolean isMining;
     private Config config;
     private Location mineableLocation;
+    private Mineable miningBlock;
 
     public Miner(Dispenser inBlock)
     {
@@ -35,16 +37,19 @@ public class Miner implements Interactor
         if (!isMining) {
             BlockInteractor.debugMessage("interact() called on miner", 2);
             BlockInteractor.debugMessage("Trying to get mineable for block type " + mineableLocation.getBlock().getType(), 2);
-            Mineable toMine = config.mineables().get(mineableLocation.getBlock().getType());
-            if (toMine != null) {
-                Fuel fuelType = getFuel(toMine, dispensedItem);
+            setMiningBlock();
+            if (miningBlock != null) {
+                Fuel fuelType = getFuel(miningBlock, dispensedItem);
                 if (fuelType != null) {
                     isMining = true;
                     BlockInteractor.debugMessage("Begining Mining", 2);
                     Bukkit.getScheduler().scheduleSyncDelayedTask(BlockInteractor.PLUGIN, new Runnable() {
                         @Override
                         public void run() {
-                            minerBlock.getWorld().dropItemNaturally(mineableLocation.clone().add(0,0.5,0), toMine.result());
+                            minerBlock.getWorld().dropItemNaturally(mineableLocation.clone().add(0,0.5,0), miningBlock.result());
+                            if (miningBlock.use()) {
+                                mineableLocation.getBlock().setType(Material.AIR);
+                            }
                             isMining = false;
                             if (minerBlock.getBlockPower() > 0) {
                                 miner.dispense();
@@ -54,7 +59,7 @@ public class Miner implements Interactor
                 } else {
                     BlockInteractor.debugMessage("No fuel was found in the miner", 2);
                     BlockInteractor.debugMessage("Valid fuels are: ", 2);
-                    for (Fuel validFuel : toMine.fuels()) {
+                    for (Fuel validFuel : miningBlock.fuels()) {
                         BlockInteractor.debugMessage("\t" + validFuel.name(), 2);
                     }
                 }
@@ -142,5 +147,12 @@ public class Miner implements Interactor
                 ((Dispenser)minerBlock.getState()).getInventory().removeItem(toRemove);
             }
         }, 1);
+    }
+
+    private void setMiningBlock()
+    {
+        if (miningBlock == null || miningBlock.type() != mineableLocation.getBlock().getType()) {
+            miningBlock = config.getMineable(mineableLocation.getBlock().getType());
+        }
     }
 }

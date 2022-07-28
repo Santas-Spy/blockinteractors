@@ -42,6 +42,7 @@ mineable-blocks:
   diamond_ore:
     fuels: [coal,CUSTOM:superfuel]
     gives: diamond:1
+    maxuses: 10
   iron_ore:
     fuels: [coal,charcoal,CUSTOM:superfuel]
     gives: raw_iron:3
@@ -54,3 +55,4 @@ mineable-blocks:
   ancient_debris:
     fuels: [CUSTOM:superfuel]
     gives: netherite_scrap:1
+    maxuses: 5

@@ -5,18 +5,18 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class Mineable {
+public class MineableBlueprint {
     private Material type;
     private List<Fuel> fuels;
     private ItemStack result;
-    private int usesRemaining;
+    private int uses;
 
-    public Mineable(Material type, List<Fuel> fuels, ItemStack result, int usesRemaining)
+    public MineableBlueprint(Material type, List<Fuel> fuels, ItemStack result, int uses)
     {
         this.type = type;
         this.fuels = fuels;
         this.result = result;
-        this.usesRemaining = usesRemaining;
+        this.uses = uses;
     }
 
     public Material type()
@@ -34,17 +34,8 @@ public class Mineable {
         return result;
     }
 
-    public boolean use()
+    public int uses()
     {
-        boolean done = false;
-        if (usesRemaining >= 0) {
-            if (usesRemaining == 0) {
-                done = true;
-            } else {
-                usesRemaining--;
-            }
-        }
-
-        return done;
+        return uses;
     }
 }
