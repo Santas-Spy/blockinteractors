@@ -15,8 +15,9 @@ Miners function more like the miners from Factorio than mining in minecraft. You
 diamond_ore:
     fuels: [coal,CUSTOM:superfuel]
     gives: diamond:1
+    maxuses: 10
 ```
-The first line is the name of the block that is mineable, the fuels are the items that must be present in the dispenser to act as fuel (which ill explain in a bit), and gives is the result of the mining. This is a fairly vanilla mining but it could be anything, you could mine sponge using iron pickaxes as fuel and have it drop steak is you wanted.
+The first line is the name of the block that is mineable, the fuels are the items that must be present in the dispenser to act as fuel (which ill explain in a bit), and gives is the result of the mining. This is a fairly vanilla mining but it could be anything, you could mine sponge using iron pickaxes as fuel and have it drop steak is you wanted. Maxuses is the maximum number of times a block can be mined before it will disappear. This is an optional setting and if omitted the block will never run out of uses.
 
 Fuels are items that must be present inside a miner in order for it to work. These fuels are defined as follows:
 ```yaml
